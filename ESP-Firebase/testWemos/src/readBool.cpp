@@ -34,9 +34,9 @@ void setup() {
 }
 
 void loop() {
-  delay(1000);\n
+  delay(1000);
   state = !state;
-  if(Firebase.getBool(firebaseData, "/wio-link-01/state")) {
+  if(Firebase.getBool(firebaseData, "/20201027/1/Status")) {
     state = firebaseData.boolData();
     Serial.println(state);
     delay(1000);
