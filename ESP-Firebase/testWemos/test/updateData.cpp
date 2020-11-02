@@ -2,11 +2,11 @@
 #include <ESP8266Wifi.h>
 #include <FirebaseESP8266.h>
 
-#define WIFI_SSID "WIFI_SSID"
+#define WIFI_SSID     "WIFI_SSID"
 #define WIFI_PASSWORD "WIFI_PASSWORD"
 
 #define FIREBASE_HOST "FIREBASE_HOST"
-#define FIREBASE_KEY "FIREBASE_KEY"
+#define FIREBASE_KEY  "FIREBASE_KEY"
 
 #define LED D13
 
@@ -69,6 +69,20 @@ bool readFinish(String path, int index){
     }
 }
 
+void updateFinish(String path, int index){
+    if (Firebase.getJSON(firebaseData, path)){
+        String key = getKey(path, index);
+        path += "/" + key + "/finish";
+        Firebase.getBool(firebaseData, path);
+        bool state = firebaseData.boolData();
+        // Serial.println(state);
+        return state;
+    }
+    else{
+        Serial.println("Error : " + firebaseData.errorReason());
+    }
+}
+
 void setup(){
     pinMode(LED, OUTPUT);
     Serial.begin(115200);
@@ -83,6 +97,6 @@ void loop(){
     // String key = getKey("/20201027/1", 0);
     // Serial.print(index);
     // Serial.println(" : " + key);
-    updateBool("/20201027/1", 0);
+    readFinish("/20201027/1", 0);
     delay(3000);
 }
