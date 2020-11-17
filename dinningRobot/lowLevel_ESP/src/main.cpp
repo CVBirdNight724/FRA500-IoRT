@@ -79,7 +79,7 @@ void updateFinish(String path, int index){
     }
 }
 
-void readTable(String pathx){
+bool readTable(String path, int index=1){
     if (Firebase.getJSON(firebaseData, path)){
         String key = getKey(path, index);
         path += "/" + key + "/finish";
@@ -97,17 +97,21 @@ void readTable(String pathx){
 void setup(){
     pinMode(LED, OUTPUT);
     Serial.begin(115200);
-    connectWifi();
+    // connectWifi();
 
-    Firebase.begin(FIREBASE_HOST, FIREBASE_KEY);
-    Serial.println("Connected Firebase");
+    // Firebase.begin(FIREBASE_HOST, FIREBASE_KEY);
+    // Serial.println("Connected Firebase");
 }
 
 void loop(){
-    int index = lenIndex("/20201027/1");
-    Serial.println("index: " + index);
-    String key = getKey("/20201027/1", 0);
-    Serial.println("key : " + key);
-    readFinish("/20201027/1", 0);
-    delay(3000);
+    Serial.print("1");
+    Serial.print("0");
+    delay(1000);
+
+    // int index = lenIndex("/20201027/1");
+    // Serial.println("index: " + index);
+    // String key = getKey("/20201027/1", 0);
+    // Serial.println("key : " + key);
+    // readFinish("/20201027/1", 0);
+    // delay(3000);
 }

@@ -36,7 +36,7 @@
 #define REMOTE_L_Y_THRESHOLD  100
 #define REMOTE_R_X_THRESHOLD  100
 #define REMOTE_R_Y_THRESHOLD  100
-#define IR_NUMBER 5
+#define IR_NUMBER 5 
 #define IR_WHITE_VALUE      true
 #define IR_REVERSE          true
 
@@ -56,7 +56,7 @@ int REMOTE_L_Y_VALUE;
 int REMOTE_R_X_VALUE;
 int REMOTE_R_Y_VALUE;
 unsigned long timer_1, timer_2, timer_3, timer_4;
-int command[2];
+char command[2];
 
 void setPin(){
   PCICR |= (1 << PCIE0);          // set PCIE0 to enable PCMSK0 scan
@@ -78,7 +78,7 @@ void setPin(){
 }
 
 void motorL(int pwm){
-  if(pwm >= 100){
+  if(pwm >= MAX_PWM){
     digitalWrite(L_A, HIGH);
     digitalWrite(L_B, LOW);
     digitalWrite(L_PWM, HIGH);
@@ -93,7 +93,7 @@ void motorL(int pwm){
     digitalWrite(L_B, HIGH);
     analogWrite(L_PWM, map(abs(pwm), 0, 100, 0, 255));
   }
-  else if(pwm < -MAX_PWM){
+  else if(pwm <= -MAX_PWM){
     digitalWrite(L_A, LOW);
     digitalWrite(L_B, HIGH);
     digitalWrite(L_PWM, HIGH);
@@ -121,7 +121,7 @@ void motorR(int pwm){
     digitalWrite(R_B, HIGH);
     analogWrite(R_PWM, map(abs(pwm), 0, 100, 0, 255));
   }
-  else if(pwm < -MAX_PWM){
+  else if(pwm <= -MAX_PWM){
     digitalWrite(R_A, LOW);
     digitalWrite(R_B, HIGH);
     digitalWrite(R_PWM, HIGH);
@@ -317,17 +317,21 @@ void lineTracking(){
   }
 }
 
-
-int readUART(){
+void readUART(){
   if(Serial.available() > 0){
     String data = Serial.readString();
     command[0] = data[0];
     command[1] = data[1];
-    Serial.print("0: ");
-    Serial.print(command[0]);
-    Serial.print(" ,1: ");
-    Serial.println(command[1]);
+    // Serial.print("0: ");
+    // Serial.print(command[0]);
+    // Serial.print(" ,1: ");
+    // Serial.println(command[1]);
   }
+}
+
+void sendFinish(){
+  Serial.print(command[0]);
+  Serial.print("1");
 }
 
 void cmd(int state){
@@ -348,13 +352,16 @@ void setup() {
 }
   
 void loop() {
-  readUART();
-  delay(1000);
+  Serial.println(valueIR());
+  delay(300);
+  // readUART();
+  // printSignal();
+  // delay(500);
 
   // lineTracking();
   // delay(300);
 
   // if(MANUAL_MODE){
-  //   manualControl();
+    // manualControl();
   // }
 }
