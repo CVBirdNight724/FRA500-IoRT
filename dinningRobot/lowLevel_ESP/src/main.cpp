@@ -104,14 +104,11 @@ void setup(){
 }
 
 void loop(){
-    Serial.print("1");
-    Serial.print("0");
-    delay(1000);
 
-    // int index = lenIndex("/20201027/1");
-    // Serial.println("index: " + index);
-    // String key = getKey("/20201027/1", 0);
-    // Serial.println("key : " + key);
-    // readFinish("/20201027/1", 0);
-    // delay(3000);
+    int index = lenIndex("/20201027/1");
+    Serial.println("index: " + index);
+    String key = getKey("/20201027/1", 0);
+    Serial.println("key : " + key);
+    readFinish("/20201027/1", 0);
+    delay(3000);
 }
