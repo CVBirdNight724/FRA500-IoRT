@@ -26,6 +26,7 @@ class queueFirebase:
             self.numberOrder += 1
             title = self.date + '/' + str(self.numberOrder)
             self.orders[self.numberOrder] = order
+            print(title)
             self.host.post(title, order)
             return True
 
@@ -49,7 +50,7 @@ class queueFirebase:
             
     def update(self, span=10):
         self.timeUpdate()
-        self.delete()
+        # self.delete()
         start_time = time.time()
         while True:
             if time.time() - start_time > span:
@@ -59,27 +60,38 @@ class queueFirebase:
         if order is None:
             return self.orders
         else:
-            orders = {}
-            for key in order:
+            orders = {} 
+            for key in order:   
                 orders[key] = self.orders[key]
             return orders
+    
+    def checkFinal(self, path):
+        plan = self.host.get(path, '')
+        key = ''
+        for keys in plan:
+            key = keys
+        finish = plan[key]['finish']
+        # print(finish)
+        return finish
 
 
-data1 = {
-    'table': '5',
-    'menu': '11',
-}
+# data1 = {
+#     'table': '20',
+#     'menu': '12',
+# }
 
-data2 = {
-    'table': '3',
-    'menu': '4',
-}
+# data2 = {
+#     'table': '5',
+#     'menu': '6',
+# }
+
 
 sys = queueFirebase(fb)
+sys.checkFinal('/20201210/1')
 
-sys.getOrders([data1, data2])
-for i in range(10):
-    state = sys.update()
-    if state is None:
-        break
-print(sys.printData())
+# sys.getOrders([data1, data2])
+# for i in range(10):
+#     state = sys.update()
+#     if state is None:
+#         break
+# print(sys.printData())
