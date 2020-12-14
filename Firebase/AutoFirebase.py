@@ -21,58 +21,49 @@ class queueFirebase:
     def post(self, order=None):
         if order != '' and type(order) != type(None):
             self.timeUpdate()
+            self.numberFinish += 1
+            
             order['time'] = self.time
             order['finish'] = False
             self.numberOrder += 1
-            title = self.date + '/' + str(self.numberOrder)
+            title = self.date + '/' + str(self.numberFinish)
             self.orders[self.numberOrder] = order
-            print(title)
             self.host.post(title, order)
+            
+            
             return True
-
-    def delete(self):
-        title = self.date + '/' + str(self.numberFinish + 1)
-        data = self.host.get(title, '')
-        if data is None:
-            return None
-        for key in data:
-            if data[key]['finish'] == True:
-                self.host.delete(title, '')
-                self.numberFinish += 1
-                return True
-            else:
-                return False
     
     def getOrders(self, orders):
         for order in orders:
             self.post(order)
+        self.host.put('', 'Order', str(self.numberFinish))
         return True
             
-    def update(self, span=10):
+    def update(self):
         self.timeUpdate()
-        # self.delete()
-        start_time = time.time()
-        while True:
-            if time.time() - start_time > span:
-                break
+        self.host.put('','Date',self.date)
+        self.numberFinish = int(self.host.get('Order', None))
+        # finish = self.checkFinal()
+        # self.host.put('', 'Order', self.numberFinish)
 
-    def printData(self, order=None):
-        if order is None:
-            return self.orders
-        else:
-            orders = {} 
-            for key in order:   
-                orders[key] = self.orders[key]
-            return orders
+        # start_time = time.time()
+        # while True:
+        #     if time.time() - start_time > span:
+        #         break
     
-    def checkFinal(self, path):
-        plan = self.host.get(path, '')
+    def checkFinal(self):
+        plan = self.host.get(self.getLatest(), '')
         key = ''
+        # print(plan)
         for keys in plan:
-            key = keys
+            key = keys  
         finish = plan[key]['finish']
-        # print(finish)
         return finish
+    
+    def getLatest(self):
+        ans = '/' + str(self.timeUpdate()) + '/'
+        path = ans+str(self.numberFinish)
+        return path
 
 
 # data1 = {
@@ -86,9 +77,11 @@ class queueFirebase:
 # }
 
 
-sys = queueFirebase(fb)
-sys.checkFinal('/20201210/1')
+# sys = queueFirebase(fb)
+# sys.timeUpdate()
+# # sys.checkFinal('/20201210/1')
 
+# sys.update()
 # sys.getOrders([data1, data2])
 # for i in range(10):
 #     state = sys.update()

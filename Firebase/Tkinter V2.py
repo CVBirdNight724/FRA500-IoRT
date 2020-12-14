@@ -1,12 +1,13 @@
 import tkinter as tk
 from AutoFirebase import queueFirebase
 from firebase import firebase
+from threading import Thread
 import time
 
 fb = firebase.FirebaseApplication('https://dinning-robot.firebaseio.com/', None)
-
 FB = queueFirebase(fb)
 
+FB.update()
 data1 = {
     'patient': 'John Smith',
     'age': '20',
@@ -43,22 +44,38 @@ data4 = {
 
 def ChangeColor(Color):
     if Color == 'R':
-        C.itemconfig(oval_red, fill="red")
+        C.itemconfig(oval_red, fill='red')
         C.itemconfig(oval_green, fill='white')
     elif Color == 'G':
         C.itemconfig(oval_red, fill='white')
         C.itemconfig(oval_green, fill='green')
     
-def printd():
-    # print(FB.printData()[1]['finish'])
-    if FB.printData()[1]['finish'] == False:
-        print('Fuck damn')
-    return FB.printData()
+def thread():
+    while(True):
+        try:
+            FB.update()
+            if FB.checkFinal() is True:
+                ChangeColor('G')
+            elif FB.checkFinal() is False:
+                ChangeColor('R')
+            else: 
+                pass
+        except:
+            pass
+
+
+thr1 = Thread(target=thread, args=[])
+thr1.start()
+
+def sendOrder(data):
+    ChangeColor('R')
+    FB.getOrders(data)
+    
+
 
 window = tk.Tk()
 frame = tk.Frame(window)
 frame.pack()
-st = tk.StringVar()
 # window.columnconfigure([0,5,10], weight=1, minsize=20)
 # window.columnconfigure([1,3,5,6,8,9], weight=2, minsize=50)
 # window.columnconfigure([2,4,7], weight=4, minsize=150)
@@ -76,30 +93,31 @@ st = tk.StringVar()
 # log = tk.Label(text='Log')
 # log.grid(row=0,column=6,columnspan=4,padx=5, pady=5, sticky='nsew')
 
-button1 = tk.Button(frame, text="1", command=lambda: FB.getOrders([data1]), width=2)
+button1 = tk.Button(frame, text="1", command=lambda: sendOrder([data1]), width=2)
 # button1.pack()
 button1.grid(row=2, column=1, padx=5, pady=5, sticky='nsew')
-
-
 
 # entry1 = tk.Entry()
 # entry1.grid(row=2, column=2, padx=5, pady=5, sticky='nsew')
 
-button2 = tk.Button(frame,text="2", command=lambda: FB.getOrders([data2]), width=2)
+button2 = tk.Button(
+    frame, text="2", command=lambda: sendOrder([data2]), width=2)
 # button2.pack()
 button2.grid(row=2, column=3, padx=5, pady=5, sticky='nsew')
 
 # entry2 = tk.Entry()
 # entry2.grid(row=2, column=4, padx=5, pady=5, sticky='nsew')
 
-button3 = tk.Button(frame,text="3", command=lambda: FB.getOrders([data3]), width=2)
+button3 = tk.Button(
+    frame, text="3", command=lambda: sendOrder([data3]), width=2)
 # button3.pack()
 button3.grid(row=4, column=1, padx=5, pady=5, sticky='nsew')
 
 # entry3 = tk.Entry()
 # entry3.grid(row=4, column=2, padx=5, pady=5, sticky='nsew')
 
-button4 = tk.Button(frame,text="4", command=lambda: FB.getOrders([data4]), width=2)
+button4 = tk.Button(
+    frame, text="4", command=lambda: sendOrder([data4]), width=2)
 # button4.pack()    
 button4.grid(row=4, column=3, padx=5, pady=5, sticky='nsew')
 
@@ -111,7 +129,7 @@ button6 = tk.Button(frame, text="Change_Color",command=lambda: ChangeColor('G'),
 # button6.pack()
 button6.grid(row=5, column=3, padx=5, pady=5, sticky='nsew')
 
-button7 = tk.Button(frame, text="print",command=lambda: FB.getData(), width=10)
+button7 = tk.Button(frame, text="print", command=lambda: FB.checkFinal(), width=10)
 # button7.pack()
 button7.grid(row=5, column=4, padx=5, pady=5, sticky='nsew')
 
@@ -143,4 +161,4 @@ oval_green = C.create_oval(120, 10, 220, 110, fill='green')
 window.mainloop()
 
 
-''
+
