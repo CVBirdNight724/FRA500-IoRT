@@ -47,6 +47,7 @@ def ChangeColor(Color):
         C.itemconfig(oval_red, fill='red')
         C.itemconfig(oval_green, fill='white')
     elif Color == 'G':
+        
         C.itemconfig(oval_red, fill='white')
         C.itemconfig(oval_green, fill='green')
     
